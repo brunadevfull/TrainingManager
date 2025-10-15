@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Play, 
   Pause, 
@@ -37,8 +36,7 @@ export default function VideoPlayer() {
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [watchedPercentage, setWatchedPercentage] = useState(0);
-  const [hasCompletedVideo, setHasCompletedVideo] = useState(false);
-  const [confirmationChecked, setConfirmationChecked] = useState(false);
+  const [hasTriggeredCompletion, setHasTriggeredCompletion] = useState(false);
 
   // Redirect if not logged in
   if (!user) {
@@ -88,7 +86,7 @@ export default function VideoPlayer() {
 
   useEffect(() => {
     if (isVideoCompleted) {
-      setHasCompletedVideo(true);
+      setHasTriggeredCompletion(true);
     }
   }, [isVideoCompleted]);
 
@@ -112,8 +110,9 @@ export default function VideoPlayer() {
         }
         
         // Consider video completed when 95% watched
-        if (percentage >= 95 && !hasCompletedVideo) {
-          setHasCompletedVideo(true);
+        if (percentage >= 95 && !isVideoCompleted && !hasTriggeredCompletion) {
+          setHasTriggeredCompletion(true);
+          completeVideoMutation.mutate();
         }
       }
     };
@@ -129,7 +128,7 @@ export default function VideoPlayer() {
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
     };
-  }, [hasCompletedVideo, trackViewMutation]);
+  }, [hasTriggeredCompletion, isVideoCompleted, trackViewMutation, completeVideoMutation]);
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -181,19 +180,6 @@ export default function VideoPlayer() {
     if (video.requestFullscreen) {
       video.requestFullscreen();
     }
-  };
-
-  const handleCompleteVideo = () => {
-    if (!confirmationChecked) {
-      toast({
-        title: "Confirmação necessária",
-        description: "Você precisa confirmar que assistiu ao vídeo completo",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    completeVideoMutation.mutate();
   };
 
   if (isLoading) {
@@ -379,36 +365,6 @@ export default function VideoPlayer() {
                 </CardContent>
               </Card>
 
-              {hasCompletedVideo && !isVideoCompleted && (
-                <Card className="mt-6">
-                  <CardHeader>
-                    <CardTitle>Confirmar Conclusão</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="completion-check"
-                          checked={confirmationChecked}
-                          onCheckedChange={(checked) => setConfirmationChecked(checked as boolean)}
-                        />
-                        <label htmlFor="completion-check" className="text-sm">
-                          Confirmo que assisti ao vídeo completo
-                        </label>
-                      </div>
-                      
-                      <Button
-                        className="w-full btn-navy"
-                        onClick={handleCompleteVideo}
-                        disabled={!confirmationChecked || completeVideoMutation.isPending}
-                      >
-                        <Check className="w-4 h-4 mr-2" />
-                        {completeVideoMutation.isPending ? "Confirmando..." : "Confirmar Conclusão"}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
             </div>
           </div>
         </div>

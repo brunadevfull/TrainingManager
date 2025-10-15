@@ -39,6 +39,7 @@ export default function VideoPlayer() {
   const [watchedPercentage, setWatchedPercentage] = useState(0);
   const [hasCompletedVideo, setHasCompletedVideo] = useState(false);
   const [confirmationChecked, setConfirmationChecked] = useState(false);
+  const lastTrackedSegmentRef = useRef(-1);
 
   // Redirect if not logged in
   if (!user) {
@@ -107,8 +108,10 @@ export default function VideoPlayer() {
         setWatchedPercentage(percentage);
         
         // Track view every 30 seconds
-        if (Math.floor(current) % 30 === 0) {
-          trackViewMutation.mutate({ duration: Math.floor(current) });
+        const currentSegment = Math.floor(current / 30);
+        if (currentSegment > 0 && currentSegment !== lastTrackedSegmentRef.current) {
+          lastTrackedSegmentRef.current = currentSegment;
+          trackViewMutation.mutate({ duration: currentSegment * 30 });
         }
         
         // Consider video completed when 95% watched

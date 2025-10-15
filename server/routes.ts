@@ -128,14 +128,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Usuário inativo" });
       }
 
-      // Update last login
-      // await storage.updateUser(user.id, { lastLogin: new Date() });
+      // Update last login with only the required field
+      const updatedUser = await storage.updateUser(user.id, { lastLogin: new Date() });
 
       // Set session
-      req.session.userId = user.id;
-      req.session.userRole = user.role;
+      req.session.userId = updatedUser.id;
+      req.session.userRole = updatedUser.role;
 
-      const { password: _, ...userWithoutPassword } = user;
+      const { password: _, ...userWithoutPassword } = updatedUser;
       res.json({ user: userWithoutPassword });
     } catch (error) {
       console.error("Login error:", error);

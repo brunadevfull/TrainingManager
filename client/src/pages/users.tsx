@@ -88,6 +88,12 @@ export default function Users() {
     setShowUserModal(true);
   };
 
+  const renderLastLogin = (lastLogin: Date | string | null | undefined) => {
+    if (!lastLogin) return "Nunca";
+    const parsedDate = new Date(lastLogin);
+    return Number.isNaN(parsedDate.getTime()) ? "Nunca" : formatDate(parsedDate);
+  };
+
   return (
     <div className="min-h-screen bg-[var(--navy-light)]">
       <Navbar />
@@ -149,9 +155,7 @@ export default function Users() {
                             </span>
                           )}
                         </TableCell>
-                        <TableCell>
-                          {u.lastLogin ? formatDate(u.lastLogin) : "Nunca"}
-                        </TableCell>
+                        <TableCell>{renderLastLogin(u.lastLogin)}</TableCell>
                         <TableCell>
                           <Badge variant={u.active ? "default" : "secondary"}>
                             {u.active ? "Ativo" : "Inativo"}

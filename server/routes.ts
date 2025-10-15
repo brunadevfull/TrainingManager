@@ -9,6 +9,11 @@ import fs from "fs";
 import { z } from "zod";
 import { insertUserSchema, insertCategorySchema, insertVideoSchema, insertDocumentSchema, insertAnnouncementSchema } from "@shared/schema";
 
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Senha atual é obrigatória"),
+  newPassword: z.string().min(6, "A nova senha deve ter pelo menos 6 caracteres"),
+});
+
 // Extend session interface
 declare module 'express-session' {
   interface SessionData {
@@ -168,6 +173,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ user: userWithoutPassword });
     } catch (error) {
       console.error("Get user error:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.post("/api/auth/change-password", requireAuth, async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = changePasswordSchema.parse(req.body);
+
+      const userId = req.session.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({ message: "Senha atual incorreta" });
+      }
+
+      if (currentPassword === newPassword) {
+        return res.status(400).json({ message: "A nova senha deve ser diferente da senha atual" });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await storage.updateUser(userId, { password: hashedPassword });
+
+      res.json({ message: "Senha atualizada com sucesso" });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      console.error("Change password error:", error);
       res.status(500).json({ message: "Erro interno do servidor" });
     }
   });

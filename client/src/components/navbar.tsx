@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,10 +8,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Anchor, User, Settings, LogOut } from "lucide-react";
+import { User, LogOut, KeyRound } from "lucide-react";
+import ChangePasswordDialog from "./change-password-dialog";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -47,13 +50,15 @@ export default function Navbar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white/95 backdrop-blur-sm border border-gray-200">
-              <DropdownMenuItem className="hover:bg-gray-50">
-                <User className="w-4 h-4 mr-2" />
-                Perfil
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-gray-50">
-                <Settings className="w-4 h-4 mr-2" />
-                Configurações
+              <DropdownMenuItem
+                className="hover:bg-gray-50"
+                onSelect={(event) => {
+                  event.preventDefault();
+                  setIsChangePasswordOpen(true);
+                }}
+              >
+                <KeyRound className="w-4 h-4 mr-2" />
+                Trocar Senha
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="hover:bg-red-50 text-red-600">
@@ -62,6 +67,10 @@ export default function Navbar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <ChangePasswordDialog
+            open={isChangePasswordOpen}
+            onOpenChange={setIsChangePasswordOpen}
+          />
         </div>
       </div>
     </nav>

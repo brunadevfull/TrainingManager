@@ -12,6 +12,11 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export class AuthService {
   async login(credentials: LoginCredentials): Promise<User> {
     const response = await apiRequest("POST", "/api/auth/login", credentials);
@@ -35,6 +40,12 @@ export class AuthService {
       }
       throw error;
     }
+  }
+
+  async changePassword(payload: ChangePasswordPayload): Promise<string> {
+    const response = await apiRequest("POST", "/api/auth/change-password", payload);
+    const data = await response.json();
+    return data.message ?? "Senha atualizada com sucesso";
   }
 }
 

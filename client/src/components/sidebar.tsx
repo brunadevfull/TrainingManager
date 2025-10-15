@@ -24,7 +24,7 @@ export default function Sidebar({ className }: SidebarProps) {
 
   const menuItems = [
     {
-      label: "Dashboard",
+      label: "Página Inicial",
       icon: Home,
       path: "/dashboard",
       adminOnly: false,

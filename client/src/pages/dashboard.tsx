@@ -72,7 +72,7 @@ export default function Dashboard() {
         
         <div className="flex-1 p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Dashboard</h1>
+            <h1 className="text-2xl font-bold">Página Inicial</h1>
             <div className="flex items-center text-muted-foreground">
               <Calendar className="w-4 h-4 mr-2" />
               {formatDate(new Date())}

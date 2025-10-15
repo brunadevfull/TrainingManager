@@ -104,9 +104,7 @@ export default function DocumentManagement() {
 
   const deleteDocumentMutation = useMutation({
     mutationFn: async (documentId: number) => {
-      await apiRequest(`/api/documents/${documentId}`, {
-        method: "DELETE",
-      });
+      await apiRequest("DELETE", `/api/documents/${documentId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/documents"] });

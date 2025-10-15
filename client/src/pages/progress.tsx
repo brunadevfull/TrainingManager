@@ -65,11 +65,6 @@ export default function ProgressPage() {
     };
   });
 
-  const downloadCertificate = (videoId: number) => {
-    // TODO: Implement certificate download
-    console.log("Download certificate for video:", videoId);
-  };
-
   return (
     <div className="min-h-screen bg-[var(--navy-light)]">
       <Navbar />
@@ -184,18 +179,8 @@ export default function ProgressPage() {
                         <TableCell>
                           {video.completedAt ? formatDate(video.completedAt) : "-"}
                         </TableCell>
-                        <TableCell>
-                          {video.certificateIssued ? (
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => downloadCertificate(video.id)}
-                            >
-                              <Download className="w-4 h-4" />
-                            </Button>
-                          ) : (
-                            "-"
-                          )}
+                        <TableCell className="text-sm text-muted-foreground">
+                          {video.certificateIssued ? "Disponível" : "Não disponível"}
                         </TableCell>
                       </TableRow>
                     ))}

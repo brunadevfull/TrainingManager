@@ -56,12 +56,14 @@ export default function VideoPlayer() {
     enabled: !!user.id,
   });
 
-  const trackViewMutation = useMutation({
-    mutationFn: (data: { duration: number }) => 
+  const lastTrackedBucketRef = useRef(-1);
+
+  const { mutate: trackView } = useMutation({
+    mutationFn: (data: { duration: number }) =>
       apiRequest("POST", `/api/videos/${videoId}/view`, data),
   });
 
-  const completeVideoMutation = useMutation({
+  const { mutate: completeVideo } = useMutation({
     mutationFn: () => apiRequest("POST", `/api/videos/${videoId}/complete`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/users", user.id, "progress"] });
@@ -76,6 +78,7 @@ export default function VideoPlayer() {
         description: error instanceof Error ? error.message : "Erro ao marcar vídeo como concluído",
         variant: "destructive",
       });
+      setHasTriggeredCompletion(false);
     },
   });
 
@@ -105,14 +108,19 @@ export default function VideoPlayer() {
         setWatchedPercentage(percentage);
         
         // Track view every 30 seconds
-        if (Math.floor(current) % 30 === 0) {
-          trackViewMutation.mutate({ duration: Math.floor(current) });
+        const currentBucket = Math.floor(current / 30);
+        if (currentBucket < lastTrackedBucketRef.current) {
+          lastTrackedBucketRef.current = currentBucket;
         }
-        
+        if (currentBucket > lastTrackedBucketRef.current) {
+          lastTrackedBucketRef.current = currentBucket;
+          trackView({ duration: Math.floor(current) });
+        }
+
         // Consider video completed when 95% watched
         if (percentage >= 95 && !isVideoCompleted && !hasTriggeredCompletion) {
           setHasTriggeredCompletion(true);
-          completeVideoMutation.mutate();
+          completeVideo();
         }
       }
     };
@@ -121,14 +129,18 @@ export default function VideoPlayer() {
       setDuration(video.duration);
     };
 
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    video.addEventListener("timeupdate", handleTimeUpdate);
+    video.addEventListener("loadedmetadata", handleLoadedMetadata);
 
     return () => {
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      video.removeEventListener("timeupdate", handleTimeUpdate);
+      video.removeEventListener("loadedmetadata", handleLoadedMetadata);
     };
-  }, [hasTriggeredCompletion, isVideoCompleted, trackViewMutation, completeVideoMutation]);
+  }, [completeVideo, hasTriggeredCompletion, isVideoCompleted, trackView]);
+
+  useEffect(() => {
+    lastTrackedBucketRef.current = -1;
+  }, [videoId]);
 
   const togglePlay = () => {
     const video = videoRef.current;

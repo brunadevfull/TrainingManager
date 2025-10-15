@@ -231,7 +231,7 @@ export default function UserModal({ isOpen, onClose, user }: UserModalProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="user">Militar</SelectItem>
+                <SelectItem value="user">Usuário</SelectItem>
                 <SelectItem value="admin">Administrador</SelectItem>
               </SelectContent>
             </Select>

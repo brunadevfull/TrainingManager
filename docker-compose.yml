@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # Banco de dados PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: papem35-db
+    environment:
+      POSTGRES_DB: papem35
+      POSTGRES_USER: papem35_user
+      POSTGRES_PASSWORD: papem35_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    networks:
+      - papem35-network
+
+  # Aplicação PAPEM-35
+  app:
+    build: .
+    container_name: papem35-app
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: postgresql://papem35_user:papem35_password@postgres:5432/papem35
+    volumes:
+      - ./uploads:/app/uploads
+      - ./backups:/app/backups
+    depends_on:
+      - postgres
+    networks:
+      - papem35-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  papem35-network:
+    driver: bridge

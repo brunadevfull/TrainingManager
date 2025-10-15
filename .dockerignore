@@ -1,0 +1,40 @@
+# Excluir node_modules (será instalado no container)
+node_modules/
+
+# Excluir arquivos de desenvolvimento
+.git/
+.gitignore
+*.md
+.env.local
+.env.development
+
+# Excluir logs e cache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+
+# Excluir arquivos de build local (será feito no container)
+client/dist/
+client/.vite/
+
+# Excluir arquivos de teste
+coverage/
+.nyc_output/
+test-results/
+
+# Excluir arquivos temporários
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Manter estrutura de uploads mas não o conteúdo (opcional)
+uploads/videos/*
+uploads/documents/*
+!uploads/videos/.gitkeep
+!uploads/documents/.gitkeep
+
+# Excluir backups locais (serão criados no container)
+backups/*.sql

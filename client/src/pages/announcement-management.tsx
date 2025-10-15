@@ -321,7 +321,7 @@ export default function AnnouncementManagement() {
                               <SelectContent>
                                 <SelectItem value="all">Todos</SelectItem>
                                 <SelectItem value="admin">Administradores</SelectItem>
-                                <SelectItem value="user">Militares</SelectItem>
+                                <SelectItem value="user">Usuários</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -420,7 +420,7 @@ export default function AnnouncementManagement() {
                             </Badge>
                             {announcement.targetRole && (
                               <Badge variant="secondary">
-                                {announcement.targetRole === "admin" ? "Administradores" : "Militares"}
+                                {announcement.targetRole === "admin" ? "Administradores" : "Usuários"}
                               </Badge>
                             )}
                             {isExpired && (

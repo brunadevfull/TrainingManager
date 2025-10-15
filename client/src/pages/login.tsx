@@ -175,7 +175,7 @@ export default function Login() {
                 <div className="text-center text-xs text-gray-500 mt-4 p-3 bg-gray-50/80 rounded-lg">
                   <p className="font-medium mb-1">Credenciais de Teste:</p>
                   <p className="text-[var(--papem-header)] font-mono">Admin: 12.3456.78</p>
-                  <p className="text-[var(--papem-header)] font-mono">Militar: 98.7654.32</p>
+                  <p className="text-[var(--papem-header)] font-mono">Usuário: 98.7654.32</p>
                   <p className="mt-1 text-gray-400">Senha: password</p>
                 </div>
               </form>

@@ -1,8 +1,9 @@
-import "dotenv/config";
-import "dotenv/config";
+import { config as loadEnvConfig } from "dotenv";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+
+loadEnvConfig({ override: true });
 
 const app = express();
 app.use(express.json());
@@ -63,7 +64,9 @@ app.use((req, res, next) => {
 
   // Serve the app on the configured port (defaults to 5001)
   // so both the API and the client share the same entry point.
-  const port = Number(process.env.PORT ?? 5001) || 5001;
+  const configuredPort = process.env.PORT ?? process.env.APP_PORT ?? "5001";
+  const parsedPort = Number.parseInt(configuredPort, 10);
+  const port = Number.isFinite(parsedPort) && parsedPort > 0 ? parsedPort : 5001;
   server.listen({
     port,
     host: "0.0.0.0",

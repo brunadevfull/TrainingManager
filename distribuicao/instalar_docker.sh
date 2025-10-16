@@ -34,7 +34,7 @@ sleep 15
 echo "Iniciando aplicação..."
 docker run -d --name papem35-app \
   --network papem35-network \
-  -p 5000:5000 \
+  -p 5001:5001 \
   -e DATABASE_URL=postgresql://papem35_user:papem35_password@papem35-db:5432/papem35 \
   -v papem35_uploads:/app/uploads \
   -v papem35_backups:/app/backups \
@@ -42,7 +42,7 @@ docker run -d --name papem35-app \
   papem35-sistema:latest
 
 echo "✅ Sistema PAPEM-35 instalado com sucesso!"
-echo "🌐 Acesse: http://localhost:5000"
+echo "🌐 Acesse: http://localhost:5001"
 echo ""
 echo "Credenciais de teste:"
 echo "Admin: NIP 12.3456.78 / Senha: password"

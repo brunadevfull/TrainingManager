@@ -23,11 +23,11 @@ RUN mkdir -p uploads/videos uploads/documents backups
 RUN chmod -R 755 uploads/ backups/
 
 # Expor porta padrão
-EXPOSE 5000
+EXPOSE 5001
 
 # Definir variáveis de ambiente para desenvolvimento
 ENV NODE_ENV=development
-ENV PORT=5000
+ENV PORT=5001
 
 # ✅ Rodar em modo desenvolvimento (sem build)
 CMD ["npm", "run", "dev"]

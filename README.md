@@ -121,7 +121,7 @@ papem35-sistema/
 ### Desenvolvimento
 ```bash
 npm run dev
-# Acesse: http://localhost:5000
+# Acesse: http://localhost:5001
 ```
 
 ### Produção
@@ -169,8 +169,8 @@ sudo systemctl start postgresql
 
 #### Porta ocupada
 ```bash
-# Ver processos na porta 5000
-lsof -i :5000
+# Ver processos na porta 5001
+lsof -i :5001
 
 # Encerrar processo
 kill -9 [PID]

@@ -116,7 +116,7 @@ npm start
 
 ### URL Local
 ```
-http://localhost:5000
+http://localhost:5001
 ```
 
 ### Credenciais de Teste
@@ -181,8 +181,8 @@ sudo systemctl start postgresql
 
 ### Porta já em uso
 ```bash
-# Verificar processos na porta 5000
-lsof -i :5000
+# Verificar processos na porta 5001
+lsof -i :5001
 
 # Matar processo se necessário
 kill -9 [PID]

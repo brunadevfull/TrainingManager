@@ -1,13 +1,13 @@
-import { 
-  users, 
-  categories, 
-  videos, 
-  videoCompletions, 
+import {
+  users,
+  categories,
+  videos,
+  videoCompletions,
   videoViews,
   documents,
   announcements,
   documentViews,
-  type User, 
+  type User,
   type InsertUser,
   type Category,
   type InsertCategory,
@@ -100,6 +100,18 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  private sanitizeUploader(uploader: User | null): User | null {
+    if (!uploader) return null;
+    return { ...uploader, password: "" };
+  }
+
+  private sanitizeVideo(video: VideoWithDetails): VideoWithDetails {
+    return {
+      ...video,
+      uploader: this.sanitizeUploader(video.uploader),
+    };
+  }
+
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
@@ -194,11 +206,12 @@ export class DatabaseStorage implements IStorage {
         views: true
       }
     });
-    return result;
+    if (!result) return undefined;
+    return this.sanitizeVideo(result);
   }
 
   async getAllVideos(): Promise<VideoWithDetails[]> {
-    return await db.query.videos.findMany({
+    const results = await db.query.videos.findMany({
       with: {
         category: true,
         uploader: true,
@@ -207,10 +220,11 @@ export class DatabaseStorage implements IStorage {
       },
       orderBy: [desc(videos.createdAt)]
     });
+    return results.map((video) => this.sanitizeVideo(video));
   }
 
   async getVideosByCategory(categoryId: number): Promise<VideoWithDetails[]> {
-    return await db.query.videos.findMany({
+    const results = await db.query.videos.findMany({
       where: eq(videos.categoryId, categoryId),
       with: {
         category: true,
@@ -220,6 +234,7 @@ export class DatabaseStorage implements IStorage {
       },
       orderBy: [desc(videos.createdAt)]
     });
+    return results.map((video) => this.sanitizeVideo(video));
   }
 
   async createVideo(insertVideo: InsertVideo): Promise<Video> {

@@ -634,8 +634,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         downloaded: true,
       });
 
-      // Update download count - we'll handle this in the database directly
-      await storage.updateDocument(id, {});
+      // Increment download count without performing an empty update
+      await storage.incrementDocumentDownloadCount(id);
 
       res.download(documentPath, document.filename);
     } catch (error) {

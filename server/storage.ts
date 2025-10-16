@@ -88,6 +88,7 @@ export interface IStorage {
   getAllDocuments(): Promise<DocumentWithDetails[]>;
   createDocument(document: InsertDocument): Promise<Document>;
   updateDocument(id: number, document: Partial<InsertDocument>): Promise<Document>;
+  incrementDocumentDownloadCount(id: number): Promise<void>;
   deleteDocument(id: number): Promise<void>;
   
   // Document view operations
@@ -401,6 +402,13 @@ export class DatabaseStorage implements IStorage {
   async updateDocument(id: number, updateData: Partial<InsertDocument>): Promise<Document> {
     const [document] = await db.update(documents).set(updateData).where(eq(documents.id, id)).returning();
     return document;
+  }
+
+  async incrementDocumentDownloadCount(id: number): Promise<void> {
+    await db
+      .update(documents)
+      .set({ downloadCount: sql`${documents.downloadCount} + 1` })
+      .where(eq(documents.id, id));
   }
 
   async deleteDocument(id: number): Promise<void> {
